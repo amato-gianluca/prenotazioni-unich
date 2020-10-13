@@ -6,6 +6,9 @@
   <h4>Non ci sono lezioni programmate in presenza.</h4>
 <?php } else { ?>
 <h4>Elenco lezioni</h4>
+<p>Trovate qui sotto l'elenco di tutte le lezioni programmate dall'inizio dei corsi fino alla settimana corrente e alle quali
+è assegnata un'aula. Non sono visualizzate le lezioni per le quali si prevede l'erogazione unicamente a distanza,
+che non appaiono neanche agli studenti nella app.</p>
 <ul>
     <?php foreach ($events as $event) { ?>
         <?php $courses = get_courses_for_udlogid($event['udLogId']); ?>
