@@ -49,7 +49,8 @@ numero di posti in aula <?= $event['seats'] ?> <br>
         </ol>
     <?php } ?>
 <?php } else { ?>
-    <?php $reservations = get_reservations_status($event['udLogId'], $event['start'], 'accepted'); ?>
+    <?php $all_reservations = get_reservations_hidebugs($event['udLogId'], $event['start']); ?>
+    <?php $reservations = array_filter($all_reservations, function ($r) { return $r['status'] == 'accepted' || $r['status'] == 'checkedIn'; }); ?>
     <?php if (count($reservations) == 0) { ?>
         <h4>Non ci sono studenti prenotati</h4>
     <?php } else {  ?>
@@ -61,11 +62,12 @@ numero di posti in aula <?= $event['seats'] ?> <br>
             <li>
                 <?= $real_user['COGNOME']?> <?= $real_user['NOME']?>
                 <?php reservation_handicap($reservation); ?>
+                <?php if ($reservation['status'] == 'checkedIn') echo "<strong>(presente)</strong>"; ?>
             </li>
             <?php } ?>
         </ol>
     <?php } ?>
-    <?php $reservations = get_reservations_status($event['udLogId'], $event['start'], 'received'); ?>
+    <?php $reservations = array_filter($all_reservations, function ($r) { return $r['status'] == 'received'; }); ?>
     <?php if (count($reservations) == 0) { ?>
         <h4>Non ci sono studenti in lista di attesa</h4>
     <?php } else {  ?>

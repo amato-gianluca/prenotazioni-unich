@@ -129,20 +129,37 @@ function get_reservations($udLogId, $start) {
     return $results;
 }
 
-function get_reservations_status($udLogId, $start, $status) {
-    global $dbh_prenotazione;
-    $query = '
-    SELECT  u.id, u."personalId", u.handicap, u.companions, MIN(r."createdAt") "createdAt"
-    FROM "TimeTable" t, "Reservation" r, "User" u
-    WHERE r."timeTableId" = t.id AND r."userId" = u.id
-          AND t."udLogId" = ? AND t.start = ?  AND status= ?
-    GROUP BY u.id, u."personalId", u.handicap, u.companions
-    ORDER BY "createdAt"
-    ';
-    $stmt = $dbh_prenotazione -> prepare($query);
-    $stmt -> execute([ $udLogId, $start, $status ]);
-    $results = $stmt -> fetchAll();
-    return $results;
+function get_reservations_hidebugs($udLogId, $start) {
+    $reservations = get_reservations($udLogId, $start);
+    $deleted = [];
+    for ($i = 0; $i < count($reservations); $i++) {
+        if (array_search($i, $deleted) !== FALSE) continue;
+        $ri = $reservations[$i];
+        if ($ri['status'] == 'canceled') continue;
+        for ($j = $i; $j < count($reservations); $j++) {
+            $rj = $reservations[$j];
+            if ($rj['id'] == $ri['id'] && $rj['status'] == 'checkedIn') break;
+        }
+        if ($j >= count($reservations)) {
+            for ($j = $i; $j < count($reservations); $j++) {
+                $rj = $reservations[$j];
+                if ($rj['id'] == $ri['id'] && $rj['status'] == 'accepted') break;
+            }
+        }
+        if ($j >= count($reservations)) {
+            for ($j = $i; $j < count($reservations); $j++) {
+                $rj = $reservations[$j];
+                if ($rj['id'] == $ri['id'] && $rj['status'] == 'received') break;
+            }
+        }
+        for ($l = $i; $l < count($reservations); $l++) {
+            $rl = $reservations[$l];
+            if ($l <> $j && $rl['id'] == $ri['id'] && $rl['status'] <> 'canceled') $deleted[] = $l;
+        }
+    }
+    foreach (array_reverse($deleted) as $i)
+        array_splice($reservations, $i, 1);
+    return $reservations;
 }
 
 function page_header($subtitle = '', $title = 'Didattica a distanza UdA - 2020/2021') {
