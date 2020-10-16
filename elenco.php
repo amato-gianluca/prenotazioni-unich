@@ -1,25 +1,18 @@
 <?php require_once 'init.php'; ?>
 <?php page_header('Lista prenotazioni'); ?>
-<?php 
+<?php
 $event = get_event($_GET['udLogId'], $_GET['start']);
 if (! $debug &&  ! check_event_for_teacher($event['udLogId'], $uid))
     redirect_browser('');
-
-function reservation_handicap($reservation) {
-    if ($reservation['handicap']=='t') {
-        if ($reservation['companions'] === 0) echo '<strong>(-1)</strong>';
-        elseif ($reservation['companions'] === 2)  echo '<strong>(+1)</strong>';
-    }
-}
 ?>
 <h4>Dati lezione</h4>
 <hr>
-<p>    
+<p>
 <strong>
 <?= explode(';',$_SERVER['cn'])[0] ?><br>
 <?php $courses = get_courses_for_udlogid($event['udLogId']); ?>
-<?php 
-foreach ($courses as $course) { 
+<?php
+foreach ($courses as $course) {
     echo htmlspecialchars(course_displayname($course)), "<br>\n";
 }
 ?>
@@ -37,10 +30,10 @@ numero di posti in aula <?= $event['seats'] ?> <br>
         <hr>
         <ol>
         <?php foreach ($reservations as $reservation) { ?>
-            <?php $real_user = get_real_user_data($reservation['personalId']); ?>
+            <?php $real_user = get_real_student_data($reservation['personalId']); ?>
             <li>
                 <?php if ($reservation['status'] == 'canceled') echo "<del>" ?>
-                <?= $real_user['COGNOME']?> <?= $real_user['NOME']?> (id: <?= $reservation['id']?>): 
+                <?= $real_user['COGNOME']?> <?= $real_user['NOME']?> (id: <?= $reservation['id']?>, matricola:  <?= $reservation['username']?>):
                 <?php reservation_handicap($reservation); ?>
                 created at <?= $reservation['createdAt'] ?> <strong><?=  $reservation['status'] ?></strong>
                 <?php if ($reservation['status'] == 'canceled') echo "</del>" ?>
@@ -58,7 +51,7 @@ numero di posti in aula <?= $event['seats'] ?> <br>
         <hr>
         <ol>
         <?php foreach ($reservations as $reservation) { ?>
-            <?php $real_user = get_real_user_data($reservation['personalId']); ?>
+            <?php $real_user = get_real_student_data($reservation['personalId']); ?>
             <li>
                 <?= $real_user['COGNOME']?> <?= $real_user['NOME']?>
                 <?php reservation_handicap($reservation); ?>
@@ -76,7 +69,7 @@ numero di posti in aula <?= $event['seats'] ?> <br>
         <hr>
         <ol>
         <?php foreach ($reservations as $reservation) { ?>
-            <?php $real_user = get_real_user_data($reservation['personalId']); ?>
+            <?php $real_user = get_real_student_data($reservation['personalId']); ?>
             <li>
                 <?= $real_user['COGNOME']?> <?= $real_user['NOME']?>
                 <?php reservation_handicap($reservation); ?>
@@ -84,7 +77,7 @@ numero di posti in aula <?= $event['seats'] ?> <br>
             <?php } ?>
         </ol>
     <?php } ?>
-<?php } ?> 
+<?php } ?>
 
 <div class="alert alert-dark">
     L'indicazione <strong>(+1)</strong> accanto al nome di uno studente indica che si tratta di uno studente con disabilità che ha richiesto di partecipare
