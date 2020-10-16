@@ -72,29 +72,56 @@ function get_real_student_data($persId) {
 
 function get_events_for_matricola($matricola) {
     global $dbh_prenotazione;
-    $query = '
-    SELECT DISTINCT t."udLogId", t.start, t.end
-    FROM "TimeTable" t, "Lesson" l, "LessonTeacher" lt, "Teacher" tc
-    WHERE t."lessonId" = l.id AND lt."lessonId" = l.id AND lt."teacherId" = tc.id
-        AND tc."identificationNumber" = ?
-    ORDER BY t."udLogId", t.start
-    ';
-    $stmt = $dbh_prenotazione -> prepare($query);
-    $stmt -> execute([ $matricola ]);
+    if (array_key_exists($matricola, ADMINISTRATIVE_USERS)) {
+        $cdss = ADMINISTRATIVE_USERS[$matricola];
+        $qMarks = str_repeat('?,', count($cdss) - 1) . '?';
+        $query = '
+        SELECT DISTINCT t."udLogId", t.start, t.end
+        FROM "TimeTable" t, "Lesson" l, "Degree" d
+        WHERE t."lessonId" = l.id AND l."degreeId" = d.id
+            AND d.code IN (' . $qMarks .')
+        ORDER BY t."udLogId", t.start
+        ';
+        $stmt = $dbh_prenotazione -> prepare($query);
+        $stmt -> execute($cdss);
+    } else {
+        $query = '
+        SELECT DISTINCT t."udLogId", t.start, t.end
+        FROM "TimeTable" t, "Lesson" l, "LessonTeacher" lt, "Teacher" tc
+        WHERE t."lessonId" = l.id AND lt."lessonId" = l.id AND lt."teacherId" = tc.id
+            AND tc."identificationNumber" = ?
+        ORDER BY t."udLogId", t.start
+        ';
+        $stmt = $dbh_prenotazione -> prepare($query);
+        $stmt -> execute([ $matricola ]);
+    }
     $results = $stmt -> fetchAll();
     return $results;
 }
 
 function check_event_for_teacher($udLogId, $identificationNumber) {
     global $dbh_prenotazione;
-    $query = '
-    SELECT 1
-    FROM "Lesson" l, "LessonTeacher" lt, "Teacher" tc
-    WHERE  lt."lessonId" = l.id AND lt."teacherId" = tc.id
-          AND l."upId" = ? AND tc."identificationNumber" = ?
-    ';
-    $stmt = $dbh_prenotazione -> prepare($query);
-    $stmt -> execute([ $udLogId, $identificationNumber ]);
+    if (array_key_exists($identificationNumber, ADMINISTRATIVE_USERS)) {
+        $cdss = ADMINISTRATIVE_USERS[$identificationNumber];
+        $qMarks = str_repeat('?,', count($cdss) - 1) . '?';
+        $query = '
+        SELECT 1
+        FROM "Lesson" l, "Degree" d
+        WHERE l."degreeId" = d.id
+              AND l."upId" = ? AND d.code IN (' . $qMarks .');
+        ';
+        $stmt = $dbh_prenotazione -> prepare($query);
+        $stmt -> execute(array_merge([$udLogId], $cdss));
+    } else {
+        $query = '
+        SELECT 1
+        FROM "Lesson" l, "LessonTeacher" lt, "Teacher" tc
+        WHERE  lt."lessonId" = l.id AND lt."teacherId" = tc.id
+              AND l."upId" = ? AND tc."identificationNumber" = ?
+        ';
+        $stmt = $dbh_prenotazione -> prepare($query);
+        $stmt -> execute([ $udLogId, $identificationNumber ]);
+    }
     $result = $stmt -> fetch();
     return $result;
 }
