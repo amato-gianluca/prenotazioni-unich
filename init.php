@@ -23,7 +23,8 @@ function error_handler ($errno , $errstr, $errfile, $errline, array $errcontext)
     header('Location: '.BASE.'/error.php');
 }
 
-if (! $debug) {
+if (array_search($uid, SUPER_USERS) === FALSE)
+{
    set_error_handler ('error_handler');
 }
 
