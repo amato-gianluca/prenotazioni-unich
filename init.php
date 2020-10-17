@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+ob_start();
 session_name(SESSION_NAME);
 session_start();
 setlocale(LC_ALL, 'it_IT.utf8');
@@ -20,7 +21,15 @@ $dbh_prenotazione = new  PDO(DB_DSN_PRENOTAZIONI, DB_USER_PRENOTAZIONI, DB_PASSW
 $zeus_user_stmt = $dbh_zeus -> prepare("SELECT * FROM studenti_2020 WHERE PERS_ID=?");
 
 function error_handler ($errno , $errstr, $errfile, $errline, array $errcontext) {
-    header('Location: '.BASE.'/error.php');
+    ob_clean();
+    page_header('Lista prenotazioni');
+    ?>
+    <div class="alert alert-danger" role="alert">
+    Si è verificato un errore non previsto. Si prega di contattare il responsabile del sito,
+    prof. <a href="mailto:gianluca.amato@unich.it">Gianluca Amato</a>.
+    </div>
+    <?php
+    page_footer();
 }
 
 if (array_search($uid, SUPER_USERS) === FALSE)
