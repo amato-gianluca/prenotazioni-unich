@@ -1,7 +1,7 @@
 <?php require_once 'init.php'; ?>
 <?php page_header('Lista prenotazioni'); ?>
 <?php
-$event = get_event($_GET['udLogId'], $_GET['start']);
+$event = isset($_GET['tt']) ? get_event_from_timetableid($_GET['tt']) : get_event($_GET['udLogId'], $_GET['start']);
 if (! $debug && array_search($uid, SUPER_USERS) === FALSE && ! check_event_for_teacher($event['udLogId'], $uid))
     redirect_browser('');
 ?>

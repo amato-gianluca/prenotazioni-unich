@@ -158,6 +158,20 @@ function get_event($udLogId, $start) {
     return $result;
 }
 
+function get_event_from_timetableid($id) {
+    global $dbh_prenotazione;
+    $query = '
+    SELECT t."udLogId", t.start, t.end, c.seats, c.name as "classroomName"
+    FROM "TimeTable" t, "Lesson" l, "Classroom" c
+    WHERE t."lessonId" = l.id AND t."classroomId" = c.id
+          AND t.id= ?
+    ';
+    $stmt = $dbh_prenotazione -> prepare($query);
+    $stmt -> execute([ $id ]);
+    $result = $stmt -> fetch();
+    return $result;
+}
+
 function get_courses_for_udlogid($udlogid) {
     global $dbh_prenotazione;
     $query = '
