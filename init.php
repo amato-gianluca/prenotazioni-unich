@@ -74,6 +74,14 @@ function academic_year_to_year_of_study($academicYear) {
     return 2021 - intval($comps[0]);
 }
 
+function count_reservations($reservations) {
+    $result = 0;
+    foreach ($reservations as $reservation) {
+        $result += $reservation['handicap'] ? $reservation['companions'] : 1;
+    }
+    return $result;
+}
+
 function get_real_student_data($persId) {
     global $zeus_user_stmt;
     $zeus_user_stmt -> execute ([$persId]);

@@ -47,7 +47,7 @@ numero di posti in aula <?= $event['seats'] ?> <br>
     <?php if (count($reservations) == 0) { ?>
         <h4>Non ci sono studenti prenotati</h4>
     <?php } else {  ?>
-        <h4>Studenti con prenotazione accettata (<?= count($reservations)?>)</h4>
+        <h4>Studenti con prenotazione accettata (<?= count_reservations($reservations)?>)</h4>
         <hr>
         <ol>
         <?php foreach ($reservations as $reservation) { ?>
@@ -64,7 +64,7 @@ numero di posti in aula <?= $event['seats'] ?> <br>
     <?php if (count($reservations) == 0) { ?>
         <h4>Non ci sono studenti in lista di attesa</h4>
     <?php } else {  ?>
-        <h4>Studenti in lista d'attesa (<?= count($reservations)?>)</h4>
+        <h4>Studenti in lista d'attesa (<?= count_reservations($reservations)?>)</h4>
         <p>Le liste d'attesa vengono elaborate circa ogni 30 minuti.</p>
         <hr>
         <ol>
