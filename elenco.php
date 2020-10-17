@@ -2,7 +2,7 @@
 <?php page_header('Lista prenotazioni'); ?>
 <?php
 $event = get_event($_GET['udLogId'], $_GET['start']);
-if (! $debug &&  ! check_event_for_teacher($event['udLogId'], $uid))
+if (! $debug && array_search($uid, SUPER_USERS) === FALSE && ! check_event_for_teacher($event['udLogId'], $uid))
     redirect_browser('');
 ?>
 <h4>Dati lezione</h4>
