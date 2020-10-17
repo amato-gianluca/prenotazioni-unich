@@ -12,4 +12,9 @@ define('BASE', 'http://teledidattica.unich.it/prenotazioni');
 
 define('DEBUG_KEY', '');
 define('DEBUG_VISUAL_KEY', '');
+
+define('TRACKING_USERS', [ 'username1', 'username2' ]);
+define('SUPER_USERS', [ 'username1', 'username2' ]);
+define('ADMINISTRATIVE_USERS', [ 'username1' => [ 'cdscod1', 'cdscod2' ],
+                                 'username2' => [ 'cdscod3', 'cdscod4' ] ]);
 ?>
