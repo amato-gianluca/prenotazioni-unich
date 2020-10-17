@@ -299,7 +299,7 @@ function get_tracked_teachers_from_teacher($matricola, $datestart, $dateend, $sc
 }
 
 function reservation_handicap($reservation) {
-    if ($reservation['handicap']=='t') {
+    if ($reservation['handicap']) {
         if ($reservation['companions'] === 0) echo '<strong>(-1)</strong>';
         elseif ($reservation['companions'] === 2)  echo '<strong>(+1)</strong>';
     }
