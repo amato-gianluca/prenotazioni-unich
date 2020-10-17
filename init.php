@@ -88,7 +88,7 @@ function get_real_student_data($persId) {
     return $zeus_user_stmt -> fetch();
 }
 
-function get_events_for_matricola($matricola) {
+function get_events_for_matricola($matricola, $time=1) {
     global $dbh_prenotazione;
     if (array_key_exists($matricola, ADMINISTRATIVE_USERS)) {
         $cdss = ADMINISTRATIVE_USERS[$matricola];
@@ -103,12 +103,13 @@ function get_events_for_matricola($matricola) {
         $stmt = $dbh_prenotazione -> prepare($query);
         $stmt -> execute($cdss);
     } else {
+        $pastFuture = ($time == -1) ? ' and date(t.start) < date(now()) ' : ' and date(t.start) >= date(now()) ';
         $query = '
         SELECT DISTINCT t."udLogId", t.start, t.end
         FROM "TimeTable" t, "Lesson" l, "LessonTeacher" lt, "Teacher" tc
         WHERE t."lessonId" = l.id AND lt."lessonId" = l.id AND lt."teacherId" = tc.id
-            AND tc."identificationNumber" = ?
-        ORDER BY t."udLogId", t.start
+            AND tc."identificationNumber" = ?' . $pastFuture .
+        ' ORDER BY t."udLogId", t.start
         ';
         $stmt = $dbh_prenotazione -> prepare($query);
         $stmt -> execute([ $matricola ]);
