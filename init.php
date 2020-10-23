@@ -356,6 +356,13 @@ function page_header($subtitle = '', $title = 'Didattica a distanza UdA - 2020/2
                 </div>
             </div>
         </div>
+        <div class="alert alert-secondary" role="alert">
+            Per segnalare qualsiasi malfunzionamento di questa pagina contattare lo sviluppatore, prof.
+            <a href="mailto:gianluca.amato@unich.it">Gianluca Amato</a>.
+    		Le lezioni riportate sono le stesse che appaiono nell'App che gli studenti utilizzano per la 
+	    	prenotazione del posto. In caso di mancanca di lezioni o aule errate, potete comunque segnalarmelo
+            e la richiesta sarà girata agli sviluppatori dell'App.
+        </div>
 <?php
 }
 
