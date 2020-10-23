@@ -38,11 +38,14 @@ if (array_search($uid, SUPER_USERS) === FALSE)
 }
 
 function fix_date ($dateStr) {
-    return (new DateTimeImmutable($dateStr)) -> sub(new DateInterval("PT1H")) -> setTimezone(new DateTimeZone('Europe/Rome'));
+    $date = new DateTimeImmutable($dateStr);
+    $fixdate = $date < new DateTimeImmutable('2020-10-25') ?  $date -> sub(new DateInterval("PT1H"))  : $date;
+    return $fixdate -> setTimezone(new DateTimeZone('Europe/Rome'));
 }
 
 function unfix_date($date) {
-    return $date -> add(new DateInterval("PT1H")) -> setTimezone(new DateTimeZone('UCT')) -> format(DateTimeInterface::ATOM);
+    $unfixdate = $date < new DateTimeImmutable('2020-10-25') ?  $date -> add(new DateInterval("PT1H")) : $date;
+    return $unfixdate -> setTimezone(new DateTimeZone('UCT')) -> format(DateTimeInterface::ATOM);
 }
 
 function datetime_displayname($dateStr) {
