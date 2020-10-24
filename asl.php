@@ -15,8 +15,8 @@ if (! isset($_GET['username'])) {
     la matricola.
     <li><em>date / days</em>: il sistema considera tutte le lezioni a cui lo studente o il docente è stato presente, e che iniziano
     nell'intervallo di tempo che termina in <code>date</code> e inizia <code>24*days</code> ore prima. Il formato di <code>timestamp</code>
-    deve essere riconosciuto dalla classe <code>DateTimeImmutable</code> di PHP. Ad esempio, <code>2020-10-16</code> indica
-    il 16 ottobre 2020 alle ore 00:00. (default date: istante attuale, default days: 2)
+    deve essere riconosciuto dalla classe <code>DateTimeImmutable</code> di PHP. Se viene specificata solo una data, l'ora è impostata
+    a 23:59:59.999999 (default date: istante attuale, default days: 2)
     <li><em>scope</em> è <code>aula</code> o <code>lezione</code>. Se si specifica <code>lezione</code>, il sistema individua tutti gli studenti
     o docenti che hanno partecipato alla stessa lezione dove si trovava anche la persona da tracciare. Se si specifica <code>aula</code> vengono
     individuati tutti coloro che, in dato giorno, si sono trovati nella stessa aula dove si è trovato precedentemente la persona da
@@ -26,8 +26,9 @@ if (! isset($_GET['username'])) {
 <?php
     die();
 }
-
-$dateend = new DateTimeImmutable(isset($_GET['date']) ? $_GET['date'] : "now", new DateTimeZone('Europe/Rome'));
+$dateend = isset($_GET['date'])
+    ? (new DateTimeImmutable("23:59:59.999999", new DateTimeZone('Europe/Rome'))) -> modify($_GET['date'])
+    : new DateTimeImmutable("now", new DateTimeZone('Europe/Rome'));
 $days = isset($_GET['days']) ? intval($_GET['days']) : 2;
 $datestart = $dateend->sub(new DateInterval("P${days}D"));
 $scope = isset($_GET['scope']) ? $_GET['scope'] : 'lezione';
