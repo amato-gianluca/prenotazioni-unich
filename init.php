@@ -15,10 +15,42 @@ if ($debug) {
 }
 $debug_visual = $debug && isset($_GET[DEBUG_VISUAL_KEY]);
 
+if (array_search($uid, SUPER_USERS) === FALSE)
+{
+   set_error_handler ('error_handler');
+}
+
 $dbh_zeus = new PDO(DB_DSN_ZEUS, DB_USER_ZEUS, DB_PASSWORD_ZEUS);
 $dbh_prenotazione = new  PDO(DB_DSN_PRENOTAZIONI, DB_USER_PRENOTAZIONI, DB_PASSWORD_PRENOTAZIONI, [  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ]);
 
 $zeus_user_stmt = $dbh_zeus -> prepare("SELECT * FROM studenti_2020 WHERE PERS_ID=?");
+
+$user_type = user_type($uid);
+
+if ($user_type == 'other') {
+    unathorized_user();
+}
+
+function user_type($uid) {
+    if (array_key_exists($uid, ADMINISTRATIVE_USERS))
+        $user_type = 'administrator';
+    else if (array_search($uid, SUPER_USERS) === TRUE)
+        $user_type = 'superuser';
+    else {
+        global $dbh_prenotazione;
+        $query = '
+        SELECT 1 FROM "Teacher" tc WHERE tc."identificationNumber" = ?
+        ';
+        $stmt = $dbh_prenotazione -> prepare($query);
+        $stmt -> execute([$uid]);
+        if ($stmt -> fetch())
+            $user_type = 'teacher';
+        else
+            $user_type = 'other';
+        $stmt = null;
+    }
+    return $user_type;
+}
 
 function error_handler ($errno , $errstr, $errfile, $errline, array $errcontext) {
     ob_clean();
@@ -30,11 +62,19 @@ function error_handler ($errno , $errstr, $errfile, $errline, array $errcontext)
     </div>
     <?php
     page_footer();
+    die();
 }
 
-if (array_search($uid, SUPER_USERS) === FALSE)
-{
-   set_error_handler ('error_handler');
+function unathorized_user() {
+    ob_clean();
+    page_header('Lista prenotazioni');
+    ?>
+    <div class="alert alert-danger" role="alert">
+    Non sei abilitato ad accedere a questo sito.
+    </div>
+    <?php
+    page_footer();
+    die();
 }
 
 function fix_date ($dateStr) {
@@ -92,8 +132,8 @@ function get_real_student_data($persId) {
 }
 
 function get_events_for_matricola($matricola, $time=1) {
-    global $dbh_prenotazione;
-    if (array_key_exists($matricola, ADMINISTRATIVE_USERS)) {
+    global $dbh_prenotazione, $user_type;
+    if ($user_type == 'administrator') {
         $cdss = ADMINISTRATIVE_USERS[$matricola];
         $qMarks = str_repeat('?,', count($cdss) - 1) . '?';
         $query = '
@@ -122,8 +162,8 @@ function get_events_for_matricola($matricola, $time=1) {
 }
 
 function check_event_for_teacher($udLogId, $identificationNumber) {
-    global $dbh_prenotazione;
-    if (array_key_exists($identificationNumber, ADMINISTRATIVE_USERS)) {
+    global $dbh_prenotazione, $user_type;
+    if ($user_type == 'administrator') {
         $cdss = ADMINISTRATIVE_USERS[$identificationNumber];
         $qMarks = str_repeat('?,', count($cdss) - 1) . '?';
         $query = '

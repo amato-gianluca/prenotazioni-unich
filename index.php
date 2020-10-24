@@ -1,6 +1,6 @@
 <?php require_once 'init.php'; ?>
 <?php page_header('Lista prenotazioni'); ?>
-<h2>Docente: <?= explode(';',$_SERVER['cn'])[0] ?></h2>
+<h2> <?= $user_type == 'administrator' ? 'Amministratore' : 'Docente'?>: <?= $_SERVER['givenName'] ?> <?= explode(';',$_SERVER['sn'])[0] ?></h2>
 <?php $events = get_events_for_matricola($uid, 1); ?>
 <?php $pastEvents = get_events_for_matricola($uid, -1); ?>
 <?php if (count($events) == 0) {?>
