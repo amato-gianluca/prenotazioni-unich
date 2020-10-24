@@ -9,14 +9,14 @@ if (! isset($_GET['username'])) {
 ?>
     <div class="alert alert-primary">
     Utilizzare con la sintassi
-    <code>asl.php?username=&lt;username&gt;[&amp;date=&lt;timestamp&gt;&amp;days=&lt;days&gt;&amp;scope=&lt;scope&gt;]</code>
+    <code>asl.php?username=&lt;username&gt;[&amp;date=&lt;date&gt;&amp;days=&lt;days&gt;&amp;scope=&lt;scope&gt;]</code>
     dove <ul>
     <li><em>username</em>: username della persona di cui tracciare i contatti. Può essere sia un docente che uno studente. Normalmente è
     la matricola.
-    <li><em>timestamp / days</em>: il sistema considera tutte le lezioni a cui lo studente o il docente è stato presente, e che iniziano
-    nell'intervallo di tempo che termina in <code>timestamp</code> e inizia <code>24*days</code> ore prima. Il formato di <code>timestamp</code>
+    <li><em>date / days</em>: il sistema considera tutte le lezioni a cui lo studente o il docente è stato presente, e che iniziano
+    nell'intervallo di tempo che termina in <code>date</code> e inizia <code>24*days</code> ore prima. Il formato di <code>timestamp</code>
     deve essere riconosciuto dalla classe <code>DateTimeImmutable</code> di PHP. Ad esempio, <code>2020-10-16</code> indica
-    il 16 ottobre 2020 alle ore 00:00. (default timestamp: istante attuale, default days: 2)
+    il 16 ottobre 2020 alle ore 00:00. (default date: istante attuale, default days: 2)
     <li><em>scope</em> è <code>aula</code> o <code>lezione</code>. Se si specifica <code>lezione</code>, il sistema individua tutti gli studenti
     o docenti che hanno partecipato alla stessa lezione dove si trovava anche la persona da tracciare. Se si specifica <code>aula</code> vengono
     individuati tutti coloro che, in dato giorno, si sono trovati nella stessa aula dove si è trovato precedentemente la persona da
