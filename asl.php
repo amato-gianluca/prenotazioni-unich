@@ -50,7 +50,7 @@ if (isset($_GET['format']) && $_GET['format'] == 'csv') {
     foreach ($contact_students as $contact) {
         $real_user = get_real_student_data($contact['personalId']);
         $line = [ $contact['username'], $real_user['COGNOME'], $real_user['NOME'], $real_user['COMUNE_RESIDENZA'],
-                  $real_user['PROVINCIA_RESIDENZA'],  $real_user['COMUNE_DOMICILIO'],
+                  $real_user['PROVINCIA_RESIDENZA'], $real_user['COMUNE_DOMICILIO'],
                   $real_user['PROVINCIA_DOMICILIO'], $real_user['CELLULARE'], $real_user['EMAIL_ATE'],
                   $real_user['EMAIL'],
                   livesWith_displayname($contact['livesWith']),
@@ -61,8 +61,13 @@ if (isset($_GET['format']) && $_GET['format'] == 'csv') {
     }
 
     foreach ($contact_teachers as $contact) {
-        $line = [ $contact['identificationNumber'], $contact['surname'], $contact['name'], '',
-                  '', '', '' , '', $contact['email'], '', '', 'no',
+        $real_user = get_real_teacher_data($contact['idAb']);
+        $phones = [ $real_user['CELLULARE'], $real_user['TELEFONO'], $real_user['TELEFONO_DOMICILIO'], $real_user['TELEFONO_RESIDENZA'] ];
+        $phones = array_filter($phones, function ($number) { return ! is_null($number); });
+        $line = [ $contact['identificationNumber'], $contact['surname'], $contact['name'], $real_user['COMUNE_RESIDENZA'],
+                  $real_user['PROVINCIA_RESIDENZA'], $real_user['COMUNE_DOMICILIO'],
+                  $real_user['PROVINCIA_DOMICILIO'], implode(' / ', $phones), $contact['email'],
+                  $real_user['EMAIL'], '', 'no',
                     $contact['classroomName'],
                     fix_date($contact['start'])-> format(DateTimeInterface::ATOM) ];
         fputcsv($f, $line);

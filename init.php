@@ -24,6 +24,7 @@ $dbh_zeus = new PDO(DB_DSN_ZEUS, DB_USER_ZEUS, DB_PASSWORD_ZEUS);
 $dbh_prenotazione = new  PDO(DB_DSN_PRENOTAZIONI, DB_USER_PRENOTAZIONI, DB_PASSWORD_PRENOTAZIONI, [  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION ]);
 
 $zeus_user_stmt = $dbh_zeus -> prepare("SELECT * FROM studenti_2020 WHERE PERS_ID=?");
+$zeus_teacher_stmt = $dbh_zeus -> prepare("SELECT * FROM persone WHERE ID_AB=?");
 
 $user_type = user_type($uid);
 
@@ -129,6 +130,12 @@ function get_real_student_data($persId) {
     global $zeus_user_stmt;
     $zeus_user_stmt -> execute ([$persId]);
     return $zeus_user_stmt -> fetch();
+}
+
+function get_real_teacher_data($persId) {
+    global $zeus_teacher_stmt;
+    $zeus_teacher_stmt -> execute ([$persId]);
+    return $zeus_teacher_stmt -> fetch();
 }
 
 function get_events_for_matricola($matricola, $time=1) {
@@ -399,8 +406,8 @@ function page_header($subtitle = '', $title = 'Didattica a distanza UdA - 2020/2
         <div class="alert alert-secondary" role="alert">
             Per segnalare qualsiasi malfunzionamento di questa pagina contattare lo sviluppatore, prof.
             <a href="mailto:gianluca.amato@unich.it">Gianluca Amato</a>.
-    		Le lezioni riportate sono le stesse che appaiono nell'App che gli studenti utilizzano per la 
-	    	prenotazione del posto. In caso di mancanca di lezioni o aule errate, potete comunque segnalarmelo
+            Le lezioni riportate sono le stesse che appaiono nell'App che gli studenti utilizzano per la
+            prenotazione del posto. In caso di mancanca di lezioni o aule errate, potete comunque segnalarmelo
             e la richiesta sarà girata agli sviluppatori dell'App.
         </div>
 <?php
